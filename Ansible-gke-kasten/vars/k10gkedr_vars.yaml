@@ -1,0 +1,7 @@
+project_id: "gcloud-project-id"   #Google Cloud Project ID
+bucket_name: "test-bucket"  #Name of the Google Cloud Storage Account
+profile_name: "profile-gcs-test-bucket" #Name of the Location Profile in Kasten
+region: "europe-west2" #Bucket Region when applicable 
+passphrase: "mysuperpassword" #Passphrase used when enabling Kasten DR feature
+clusterid: "aaaaaaaaa-eeee-dddd-cccc-bbbbbbbbb" #Cluster ID can be got from K10 DR Settings
+secret_name: "k10-gcs-secret" #Name of the secret to be created with Google Clous Storage Account Key
