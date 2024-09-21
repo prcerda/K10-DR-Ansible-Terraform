@@ -1,11 +1,11 @@
 # GCP Settings
-project   = "se-emea-sandbox"
+project   = "gcloud-project-id"
 region    = "europe-west2"
 az        = ["europe-west2-a"]
 
 #labels
 
-owner = "patricio_cerda"
+owner = "owner@demo"
 activity = "demo"
 
 # CIDR block for the subnet inside the VNET where the appliance will be deployed.
