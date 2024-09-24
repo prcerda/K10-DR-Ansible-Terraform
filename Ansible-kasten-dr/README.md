@@ -110,11 +110,17 @@ To recover Kasten Configuration we will be using the 01_k10_dr_restore.yaml Ansi
 
 Run the following command:
 
-ansible-playbook   01_k10_dr_restore.yaml
+```
+ansible-playbook   01_k10_dr_awss3_restore.yaml  #For AWS S3 Bucket based Location Profile
+ansible-playbook   01_k10_dr_azblob_restore.yaml  #For Azure Blob  based Location Profile
+ansible-playbook   01_k10_dr_gsc_restore.yaml  #For Google Cloud Storage based Location Profile
+```
 
 In case you are using Ansible Vaults for variables (recommended), please run the following command instead:
-ansible-playbook   --ask-vault-pass 01_k10_dr_restore.yaml
 
+```
+ansible-playbook   --ask-vault-pass 01_k10_dr_restore.yaml
+```
 
 
 # Recovering Application from Kasten backups with Ansible
@@ -126,8 +132,14 @@ To recover all protected applications from Kasten backups will be using the 02_k
 
 Run the following command:
 
+```
 ansible-playbook   02_k10_restoreapps.yaml
+```
 
 In case you are using Ansible Vaults for variables (recommended), please run the following command instead:
+
+```
 ansible-playbook   --ask-vault-pass 02_k10_restoreapps.yaml
+```
+
 
