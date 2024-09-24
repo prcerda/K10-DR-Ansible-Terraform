@@ -94,20 +94,19 @@ The entire recovery process will take approx 10 minutes or more depending on the
 ### File structure and deployment workflow
 
 The Deployment consists of two main playbook triggering multible tasks:
-1. 01_k10_dr_restore.yaml:
+1. 01_k10_dr_{type-of-bucket}_restore.yaml:
 	- This playbook creates the  Kubernetes Secret "k10-dr-secret" using the passphrase provided while enabling Disaster Recovery
 	- Then, this playbook creates a Location Profile using the provided Object Storage, which of course MUST contain the Kasten configuration backup (this is the Location Profile used when enabling the Kasten K10 Disaster Recovery in the Production Kubernetes cluster).  
 	- Finally this playbook restores the Kasten K10 configuration from the Location Profile created.
+	**NOTE**: Here is important to choose the playbook according to the type of bucket used to keep the Kasten Configuration Backup.  For instance, if your cluster is using an AWS S3 Bucket to keep the Kasten DR Configuration backup, then you need to use the "01_k10_dr_awss3_restore.yaml" playbook, as this will re-create the Location Profile with the same AWS S3 Bucket, so then you can continue with the Kasten K10 Configuration restoring process..
 1. 02_k10_restoreapps.yaml: 
 	- This playbook look for the most recent restore points available to restore the cluster-wide resources and each application.
 	- Then the playbook restore the cluster-wide resources from the most recent restore point found in previous step.
 	- Next the playbook creates a namespace for every application to be restored.
 	- Finally the playbook restore every application from the most recent restore point found in previous step.
 
-All these playbooks are available for all three Kubernetes deployments mentioned before:
-* [AWS EKS](Ansible-eks-kasten/)
-* [Azure AKS](Ansible-aks-kasten/)
-* [Google Cloud GKE](Ansible-gke-kasten/)
+All these playbooks are available in the [Ansible-kasten-dr](Ansible-kasten-dr/) folder
+
 
 Important: The playbooks must be run in the mentioned order in order to make the recovery process works.
 

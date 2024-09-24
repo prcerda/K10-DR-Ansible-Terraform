@@ -2,7 +2,6 @@
 - name: K10 Location Profile Creation
   hosts: localhost
   vars:
-    s3bucket: "pcerda-k10immutable"
     k10_ns: "kasten-io"
   collections:
     - kubernetes.core
