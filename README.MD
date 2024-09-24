@@ -94,6 +94,7 @@ The entire recovery process will take approx 10 minutes or more depending on the
 ### File structure and deployment workflow
 
 The Deployment consists of two main playbook triggering multible tasks:
+
 **NOTE**: Here is important to choose the playbook according to the type of bucket used to keep the Kasten Configuration Backup.  For instance, if your cluster is using an AWS S3 Bucket to keep the Kasten DR Configuration backup, then you need to use the "01_k10_dr_awss3_restore.yaml" playbook, as this will re-create the Location Profile with the same AWS S3 Bucket, so then you can continue with the Kasten K10 Configuration restoring process.
 
 1. 01_k10_dr_{type-of-bucket}_restore.yaml:
