@@ -13,14 +13,15 @@ module "gcp-network" {
 
   subnets = [
     {
-      subnet_name   = "subnet-${var.cluster_name}"
+      subnet_name   = var.cluster_name
       subnet_ip     = var.subnet_cidr_block_ipv4
       subnet_region = var.region
+      subnet_flow_logs = "true"
     },
   ]
 
   secondary_ranges = {
-    ("subnet-${var.cluster_name}") = [
+    (var.cluster_name) = [
       {
         range_name    = "ip-range-pods-${local.saString}"
         ip_cidr_range = "192.168.0.0/18"

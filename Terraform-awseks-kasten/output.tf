@@ -15,7 +15,7 @@ output "cluster_endpoint" {
 
 output "kubeconfig" {
   description = "Configure kubeconfig to access this cluster"
-  value       = "aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name}"
+  value       = "aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name} --alias eks-${var.cluster_name}"
 }
 
 output "s3_bucket_name" {
