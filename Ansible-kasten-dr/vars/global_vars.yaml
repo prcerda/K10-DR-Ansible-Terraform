@@ -1,0 +1,22 @@
+#Global Variables
+storageclass: ""  #Name of the Storage Class in the target Kubernetes cluster for importing applications.  Mandatory ONLY if the target Kubernetes cluster has a different StorageClass name.
+profile_name: "profile-gcs-name" #Name of the Location Profile in Kasten
+bucket_name: "gcs-name"  #Name of the Azure Blob Storage
+bucket_type: "gcs"   #Type of the bucket containing the application's backup data.  Possible values awss3 / azblob / gcs
+region: "europe-west2"  #Bucket Region when applicable
+passphrase: "MySuperPassword" #Passphrase used when enabling Kasten DR feature
+clusterid: "d0116aac-8be2-4748-a18b-4ad6e8125326" #Cluster ID can be got from K10 DR Settings
+
+#Azure Variables
+tenantID: "aaaaaaaa-431b-bbbb-add7-123456789012"  #Azure Tenant ID
+azureclientID: "aaaaaaaaaaaaaaaaaaaaaaaaaaaa" #Azure Client ID
+Azureclientsecret: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" # Azure Client Secret
+azure_storage_key: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"  #Azure Storage Access Key 
+azure_storage_env: "AzureCloud"  #AzureCloud is the default in Azure.  More info in https://docs.kasten.io/latest/usage/configuration.html#azure-storage
+
+#AWS Variables
+aws_access_key_id: "AAAAAAAAAAAAAAAAAAAA" #AWS Access Key ID
+aws_secret_access_key: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"  #AWS Secret Access Key
+
+#Google Cloud Variables
+project_id: "gcloud-project-id"   #Google Cloud Project ID

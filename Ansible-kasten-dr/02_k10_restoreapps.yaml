@@ -3,9 +3,34 @@
   hosts: localhost
   vars:
     k10_ns: "kasten-io"
+  vars_files:
+    - vars/global_vars.yaml 
   collections:
     - kubernetes.core
   tasks:
+  #Create TransformSet
+    - name: "Create sample TransformSet"
+      kubernetes.core.k8s:
+        state: present
+        definition:
+            kind: TransformSet
+            apiVersion: config.kio.kasten.io/v1alpha1
+            metadata:
+              name: dr-storageclass
+              namespace: kasten-io
+            spec:
+              comment: |
+                Modify the storageClass to change storage tier.
+              transforms:
+                - subject:
+                    resource: persistentvolumeclaims
+                  name: ChangeStorageClass
+                  json:
+                    - op: replace
+                      path: /spec/storageClassName
+                      value: "{{ storageclass }}"                   
+      when: ( storageclass != "")
+
     - name: Get all namespaces with restorepoints
       shell:
          "kubectl get restorepoints.apps.kio.kasten.io -A | awk '{print $1}' | sort | uniq"

@@ -1,0 +1,150 @@
+---
+- name: Kasten K10 Restore configuration from Disaster Recovery backup
+  hosts: localhost
+  vars:
+    k10_ns: "kasten-io"  
+  vars_files:
+    - vars/global_vars.yaml 
+  collections:
+    - kubernetes.core
+
+  tasks:
+# Creating an Location Profile Secret
+    - name: CREATE AWS S3 SECRET
+      kubernetes.core.k8s:
+        state: present
+        definition: 
+          apiVersion: v1
+          kind: Secret
+          type: secrets.kanister.io/aws             
+          metadata:
+            name: "k10-awss3-{{ bucket_name }}-secret"
+            namespace: kasten-io     
+          data:
+            aws_access_key_id: "{{ aws_access_key_id|b64encode }}"
+            aws_secret_access_key: "{{ aws_secret_access_key|b64encode }}"
+      when: ( bucket_type == "awss3")      
+
+    # Creating an Location Profile with DR Data and Immutability
+    - name: Creating an Location Profile with DR Data
+      kubernetes.core.k8s:
+        state: present
+        definition: 
+            apiVersion: config.kio.kasten.io/v1alpha1
+            kind: Profile
+            metadata:
+              name: "{{ profile_name }}"
+              namespace: kasten-io
+            spec:
+              type: Location
+              locationSpec:
+                credential:
+                  secretType: AwsAccessKey
+                  secret:
+                    apiVersion: v1
+                    kind: Secret
+                    name: "k10-awss3-{{ bucket_name }}-secret"
+                    namespace: kasten-io
+                type: ObjectStore
+                objectStore:
+                  name: "{{ bucket_name }}"
+                  objectStoreType: S3
+                  region: "{{ region }}"
+      when: ( bucket_type == "awss3")  
+
+
+# Creating an Location Profile Secret
+    - name: CREATE AZURE STORAGE ACCOUNT SECRET
+      kubernetes.core.k8s:
+        state: present
+        definition: 
+          apiVersion: v1
+          kind: Secret
+          type: secrets.kanister.io/azure             
+          metadata:
+            name: "k10-azblob-{{ bucket_name }}-secret"
+            namespace: "{{ k10_ns }}"     
+          data:
+            azure_storage_account_id: "{{ bucket_name|b64encode }}"
+            azure_storage_environment: "{{ azure_storage_env|b64encode }}"
+            azure_storage_key: "{{ azure_storage_key|b64encode }}"
+      when: ( bucket_type == "azblob")   
+
+    # Creating an Location Profile with DR Data 
+    - name: Creating an Location Profile with DR Data
+      kubernetes.core.k8s:
+        state: present
+        definition: 
+            apiVersion: config.kio.kasten.io/v1alpha1
+            kind: Profile
+            metadata:
+              name: "{{ profile_name }}"
+              namespace: kasten-io
+            spec:
+              type: Location
+              locationSpec:
+                credential:
+                  secretType: AzStorageAccount
+                  secret:
+                    apiVersion: v1
+                    kind: Secret
+                    name: "k10-azblob-{{ bucket_name }}-secret"
+                    namespace: kasten-io
+                type: ObjectStore
+                objectStore:
+                  name: "{{ bucket_name }}"
+                  objectStoreType: AZ
+      when: ( bucket_type == "azblob")   
+
+# Creating an Location Profile  Secret
+    - name: get Google Storage Account Key
+      shell:
+        "base64 -b 0 -i vars/google-sa-key.json"
+      register: sa_key
+      when: ( bucket_type == "gcs") 
+
+    - name: CREATE GCS Storage bucket SECRET
+      kubernetes.core.k8s:
+        state: present
+        definition: 
+          apiVersion: v1
+          kind: Secret
+          type: Opaque             
+          metadata:
+            name: "k10-gcs-{{ bucket_name }}-secret"
+            namespace: "{{ k10_ns }}"     
+          data:
+            project-id: "{{ project_id|b64encode }}"
+            service-account.json: "{{ sa_key.stdout }}"            
+      when: (sa_key.stdout and bucket_type == "gcs")            
+
+    # Creating an Location Profile with DR Data and Immutability
+    - name: Creating an Location Profile with DR Data
+      kubernetes.core.k8s:
+        state: present
+        definition: 
+            apiVersion: config.kio.kasten.io/v1alpha1
+            kind: Profile
+            metadata:
+              name: "{{ profile_name }}"
+              namespace: kasten-io
+            spec:
+              type: Location
+              locationSpec:
+                credential:
+                  secretType: GcpServiceAccountKey
+                  secret:
+                    apiVersion: v1
+                    kind: Secret
+                    name: "k10-gcs-{{ bucket_name }}-secret"
+                    namespace: kasten-io
+                type: ObjectStore
+                objectStore:
+                  name: "{{ bucket_name }}"
+                  objectStoreType: GCS 
+                  region: "{{ region }}"                     
+      when: ( bucket_type == "gcs")                   
+
+      
+    - name: restore Kasten DR Backup
+      include_tasks: k10dr/dr_restorek10.yaml      

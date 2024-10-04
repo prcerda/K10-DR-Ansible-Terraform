@@ -14,6 +14,7 @@
         name: "{{ nspace }}"
   when: (nspace != "NAMESPACE" and nspace != "default" and nspace != "kasten-io")
 
+#Restore apps WITH Transforms        
 - name: "restore app {{ nspace }}"
   kubernetes.core.k8s:
     state: present
@@ -29,5 +30,28 @@
             name: "{{ apprespoint.stdout }}"
             namespace: "{{ nspace }}"
           targetNamespace: "{{ nspace }}"
-  when: (nspace != "NAMESPACE" and nspace != "default" and nspace != "kasten-io" and apprespoint.stdout)
+          transforms:
+            - subject: {}
+              json: null
+              transformSetRef:
+                name: dr-storageclass
+                namespace: kasten-io
+  when: (nspace != "NAMESPACE" and nspace != "default" and nspace != "kasten-io" and apprespoint.stdout and storageclass != "")
   
+  #Restore apps WITHOUT Transforms        
+- name: "restore app {{ nspace }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: 
+        apiVersion: actions.kio.kasten.io/v1alpha1
+        kind: RestoreAction
+        metadata:
+          generateName: restore-"{{ nspace }}"-
+          namespace: "{{ nspace }}"
+        spec:
+          subject:
+            kind: RestorePoint
+            name: "{{ apprespoint.stdout }}"
+            namespace: "{{ nspace }}"
+          targetNamespace: "{{ nspace }}"
+  when: (nspace != "NAMESPACE" and nspace != "default" and nspace != "kasten-io" and apprespoint.stdout and storageclass == "")
